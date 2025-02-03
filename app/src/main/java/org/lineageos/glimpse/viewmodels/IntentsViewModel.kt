@@ -231,7 +231,12 @@ class IntentsViewModel(application: Application) : GlimpseViewModel(application)
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     val allowMultipleSelection = parsedIntent
-        .mapLatest { it is ParsedIntent.PickIntent && it.multiple }
+        .mapLatest {
+            when (it) {
+                is ParsedIntent.PickIntent -> it.multiple
+                else -> true
+            }
+        }
         .flowOn(Dispatchers.IO)
         .stateIn(
             viewModelScope,
