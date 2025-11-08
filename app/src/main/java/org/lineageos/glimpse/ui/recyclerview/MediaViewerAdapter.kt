@@ -26,6 +26,7 @@ import org.lineageos.glimpse.ext.fade
 import org.lineageos.glimpse.ext.load
 import org.lineageos.glimpse.models.Media
 import org.lineageos.glimpse.models.MediaType
+import org.lineageos.glimpse.models.MotionPhoto
 import org.lineageos.glimpse.viewmodels.LocalPlayerViewModel
 
 class MediaViewerAdapter(
@@ -61,13 +62,15 @@ class MediaViewerAdapter(
         private val playerView = view.findViewById<PlayerView>(R.id.playerView)
 
         private var media: Media? = null
+        private var motionPhoto: MotionPhoto? = null
         private var isCurrentlyDisplayedView = false
 
         @OptIn(androidx.media3.common.util.UnstableApi::class)
         private val mediaPositionObserver: (Int?) -> Unit = { currentPosition: Int? ->
             isCurrentlyDisplayedView = currentPosition == bindingAdapterPosition
 
-            val isNowVideoPlayer = isCurrentlyDisplayedView && media?.mediaType == MediaType.VIDEO
+            val isVideo = media?.mediaType == MediaType.VIDEO || motionPhoto != null
+            val isNowVideoPlayer = isCurrentlyDisplayedView && isVideo
 
             imageView.isVisible = !isNowVideoPlayer
             playerView.isVisible = isNowVideoPlayer
@@ -106,6 +109,13 @@ class MediaViewerAdapter(
             }
         }
 
+        private val displayedMediaToMotionPhotoObserver = { it: Pair<Media?, MotionPhoto?> ->
+            val (displayedMedia, motionPhoto) = it
+            this.motionPhoto = motionPhoto
+            // Trigger a refresh of the UI
+            mediaPositionObserver(localPlayerViewModel.mediaPosition.value)
+        }
+
         private var observersJob: Job? = null
 
         init {
@@ -133,6 +143,11 @@ class MediaViewerAdapter(
                 }
                 launch {
                     localPlayerViewModel.fullscreenMode.collectLatest(fullscreenModeObserver)
+                }
+                launch {
+                    localPlayerViewModel.displayedMediaToMotionPhoto.collectLatest(
+                        displayedMediaToMotionPhotoObserver
+                    )
                 }
             }
         }

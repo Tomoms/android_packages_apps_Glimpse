@@ -63,6 +63,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.adobe.xmpcore)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)

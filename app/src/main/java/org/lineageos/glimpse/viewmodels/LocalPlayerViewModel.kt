@@ -12,7 +12,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,8 +31,12 @@ import kotlinx.coroutines.flow.stateIn
 import org.lineageos.glimpse.ext.applicationContext
 import org.lineageos.glimpse.ext.isPlayingFlow
 import org.lineageos.glimpse.models.AlbumType
+import org.lineageos.glimpse.models.MediaType
+import org.lineageos.glimpse.models.MotionPhoto
 import org.lineageos.glimpse.models.RequestStatus
 import org.lineageos.glimpse.models.RequestStatus.Companion.map
+import org.lineageos.glimpse.utils.MotionPhotoExtractor
+import org.lineageos.glimpse.utils.media3.ByteBufferDataSource
 
 class LocalPlayerViewModel(
     application: Application,
@@ -262,6 +268,45 @@ class LocalPlayerViewModel(
             initialValue = null,
         )
 
+    /**
+     * Motion photo contained in the displayed media.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val motionPhoto = displayedMedia
+        .mapLatest { media ->
+            media?.takeIf { it.mediaType == MediaType.IMAGE }?.let {
+                MotionPhotoExtractor.extractMotionPhoto(applicationContext, it.uri)
+            }
+        }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null,
+        )
+
+    /**
+     * Whether we're currently playing a motion photo video.
+     */
+    private val motionPhotoEnabled = MutableStateFlow(false)
+
+    /**
+     * Displayed media to motion photo if present and requested.
+     */
+    val displayedMediaToMotionPhoto = combine(
+        displayedMedia,
+        motionPhoto,
+        motionPhotoEnabled
+    ) { displayedMedia, motionPhoto, motionPhotoEnabled ->
+        displayedMedia to motionPhoto.takeIf { motionPhotoEnabled }
+    }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null to null,
+        )
+
     override fun onCleared() {
         exoPlayer.release()
 
@@ -297,6 +342,26 @@ class LocalPlayerViewModel(
         exoPlayer.apply {
             setMediaItem(MediaItem.fromUri(uri))
             prepare()
+            playWhenReady = true
+        }
+    }
+
+    fun toggleMotionPhotoEnabled(motionPhotoEnabled: Boolean = !this.motionPhotoEnabled.value) {
+        this.motionPhotoEnabled.value = motionPhotoEnabled
+    }
+
+    @androidx.annotation.OptIn(UnstableApi::class)
+    fun playMotionPhoto(motionPhoto: MotionPhoto) {
+        val dataSourceFactory = ByteBufferDataSource.Factory(motionPhoto.videoBuffer)
+        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri("motion-photo://video"))
+
+        exoPlayer.apply {
+            setMediaSource(mediaSource)
+            prepare()
+            motionPhoto.metadata.presentationTimestampUs?.let {
+                seekTo(it / 1000)
+            }
             playWhenReady = true
         }
     }
