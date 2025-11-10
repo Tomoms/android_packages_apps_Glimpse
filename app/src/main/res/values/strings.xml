@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     SPDX-FileCopyrightText: 2023-2025 The LineageOS Project
+     SPDX-FileCopyrightText: 2023-2026 The LineageOS Project
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
@@ -136,4 +136,13 @@
 
     <!-- Settings title -->
     <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference titles -->
+    <string name="video_header">Video</string>
+
+    <!-- Video preferences -->
+    <string name="double_tap_to_seek_enabled_title">Enable double-tap to seek</string>
+    <string name="double_tap_to_seek_enabled_description">Double-tap the left or right side of the video to skip backward or forward</string>
+    <string name="double_tap_to_seek_seconds_title">Double-tap to seek skip duration</string>
+    <string name="double_tap_to_seek_seconds_description">Seconds to skip when double-tapping the video</string>
 </resources>

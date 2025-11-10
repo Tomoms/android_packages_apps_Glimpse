@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2023-2025 The LineageOS Project
+ * SPDX-FileCopyrightText: 2023-2026 The LineageOS Project
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -15,6 +15,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import org.lineageos.glimpse.ext.applicationContext
+import org.lineageos.glimpse.ext.doubleTapToSeekEnabled
+import org.lineageos.glimpse.ext.doubleTapToSeekSeconds
 import org.lineageos.glimpse.ext.isPlayingFlow
 import org.lineageos.glimpse.models.AlbumType
 import org.lineageos.glimpse.models.MediaType
@@ -42,6 +45,11 @@ class LocalPlayerViewModel(
     application: Application,
     savedStateHandle: SavedStateHandle,
 ) : GlimpseViewModel(application) {
+    // Shared preferences
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(
+        applicationContext
+    )
+
     // ExoPlayer
     val exoPlayer = ExoPlayer.Builder(applicationContext)
         .setAudioAttributes(
@@ -306,6 +314,12 @@ class LocalPlayerViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = null to null,
         )
+
+    val doubleTapToSeekEnabled: Boolean
+        get() = sharedPreferences.doubleTapToSeekEnabled
+
+    val doubleTapToSeekSeconds: Int
+        get() = sharedPreferences.doubleTapToSeekSeconds
 
     override fun onCleared() {
         exoPlayer.release()

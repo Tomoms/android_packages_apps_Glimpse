@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2023-2025 The LineageOS Project
+ * SPDX-FileCopyrightText: 2023-2026 The LineageOS Project
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -27,6 +27,7 @@ import org.lineageos.glimpse.ext.load
 import org.lineageos.glimpse.models.Media
 import org.lineageos.glimpse.models.MediaType
 import org.lineageos.glimpse.models.MotionPhoto
+import org.lineageos.glimpse.ui.MediaGestureListener
 import org.lineageos.glimpse.viewmodels.LocalPlayerViewModel
 
 class MediaViewerAdapter(
@@ -64,6 +65,7 @@ class MediaViewerAdapter(
         private var media: Media? = null
         private var motionPhoto: MotionPhoto? = null
         private var isCurrentlyDisplayedView = false
+        private val mediaGestureListener = MediaGestureListener(itemView.context)
 
         @OptIn(androidx.media3.common.util.UnstableApi::class)
         private val mediaPositionObserver: (Int?) -> Unit = { currentPosition: Int? ->
@@ -88,6 +90,9 @@ class MediaViewerAdapter(
 
             playerView.player = player
             playerControlView.player = player
+
+            // Update media gesture listener
+            updateMediaGestureListener(isNowVideoPlayer)
         }
 
         private val sheetsHeightObserver = { sheetsHeight: Pair<Int, Int> ->
@@ -125,6 +130,18 @@ class MediaViewerAdapter(
             playerView.setOnClickListener {
                 localPlayerViewModel.toggleFullscreenMode()
             }
+            playerView.setOnTouchListener(mediaGestureListener)
+        }
+
+        @OptIn(androidx.media3.common.util.UnstableApi::class)
+        private fun updateMediaGestureListener(isVideoPlayer: Boolean) {
+            mediaGestureListener.seekTimeSeconds = localPlayerViewModel.doubleTapToSeekSeconds
+            mediaGestureListener.player = when (
+                isVideoPlayer && localPlayerViewModel.doubleTapToSeekEnabled
+            ) {
+                true -> localPlayerViewModel.exoPlayer
+                false -> null
+            }
         }
 
         fun bind(media: Media) {
@@ -157,6 +174,7 @@ class MediaViewerAdapter(
             observersJob?.cancel()
             observersJob = null
 
+            mediaGestureListener.player = null
             playerView.player = null
             playerControlView.player = null
         }
