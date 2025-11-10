@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.lineageos.glimpse.ext.applicationContext
 import org.lineageos.glimpse.ext.doubleTapToSeekEnabled
 import org.lineageos.glimpse.ext.doubleTapToSeekSeconds
+import org.lineageos.glimpse.ext.edgeTapNavigationEnabled
 import org.lineageos.glimpse.ext.hideNativeSeekButtons
 import org.lineageos.glimpse.ext.isPlayingFlow
 import org.lineageos.glimpse.models.AlbumType
@@ -324,6 +325,9 @@ class LocalPlayerViewModel(
 
     val hideNativeSeekButtons: Boolean
         get() = sharedPreferences.hideNativeSeekButtons
+
+    val edgeTapNavigationEnabled: Boolean
+        get() = sharedPreferences.edgeTapNavigationEnabled
 
     override fun onCleared() {
         exoPlayer.release()

@@ -88,7 +88,24 @@ class ViewActivity : AppCompatActivity(R.layout.activity_view) {
 
     // Adapter
     private val mediaViewerAdapter by lazy {
-        MediaViewerAdapter(viewModel)
+        MediaViewerAdapter(
+            localPlayerViewModel = viewModel,
+            onNavigate = { forward ->
+                viewPager.adapter?.let { adapter ->
+                    val currentPosition = viewPager.currentItem
+
+                    val newPosition = if (forward) {
+                        currentPosition + 1
+                    } else {
+                        currentPosition - 1
+                    }
+
+                    if (newPosition in 0 until adapter.itemCount) {
+                        viewPager.setCurrentItem(newPosition, true)
+                    }
+                }
+            },
+        )
     }
 
     private var lastProcessedMedia: Media? = null

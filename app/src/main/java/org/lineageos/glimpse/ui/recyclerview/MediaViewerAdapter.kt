@@ -32,6 +32,7 @@ import org.lineageos.glimpse.viewmodels.LocalPlayerViewModel
 
 class MediaViewerAdapter(
     private val localPlayerViewModel: LocalPlayerViewModel,
+    private val onNavigate: (forward: Boolean) -> Unit,
 ) : ListAdapter<Media, MediaViewerAdapter.MediaViewHolder>(UniqueItemDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = MediaViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.media_view, parent, false),
@@ -65,7 +66,10 @@ class MediaViewerAdapter(
         private var media: Media? = null
         private var motionPhoto: MotionPhoto? = null
         private var isCurrentlyDisplayedView = false
-        private val mediaGestureListener = MediaGestureListener(itemView.context)
+        private val mediaGestureListener = MediaGestureListener(
+            context = itemView.context,
+            onNavigate = onNavigate,
+        )
 
         @OptIn(androidx.media3.common.util.UnstableApi::class)
         private val mediaPositionObserver: (Int?) -> Unit = { currentPosition: Int? ->
@@ -135,11 +139,20 @@ class MediaViewerAdapter(
             playerView.setOnClickListener {
                 localPlayerViewModel.toggleFullscreenMode()
             }
+
+            // A single touch listener handles both edge taps and double taps.
+            imageView.setOnTouchListener(mediaGestureListener)
             playerView.setOnTouchListener(mediaGestureListener)
         }
 
         @OptIn(androidx.media3.common.util.UnstableApi::class)
         private fun updateMediaGestureListener(isVideoPlayer: Boolean) {
+            mediaGestureListener.edgeTapNavigationEnabled =
+                localPlayerViewModel.edgeTapNavigationEnabled
+
+            mediaGestureListener.doubleTapSeekEnabled =
+                isVideoPlayer && localPlayerViewModel.doubleTapToSeekEnabled
+
             mediaGestureListener.seekTimeSeconds = localPlayerViewModel.doubleTapToSeekSeconds
             mediaGestureListener.player = when (
                 isVideoPlayer && localPlayerViewModel.doubleTapToSeekEnabled

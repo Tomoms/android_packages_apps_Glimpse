@@ -8,6 +8,19 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/general_header">
+
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:iconSpaceReserved="false"
+            app:key="edge_tap_navigation_enabled"
+            app:summary="@string/edge_tap_navigation_enabled_description"
+            app:title="@string/edge_tap_navigation_enable_title" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/video_header">
 
         <SwitchPreferenceCompat
