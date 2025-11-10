@@ -93,6 +93,11 @@ class MediaViewerAdapter(
 
             // Update media gesture listener
             updateMediaGestureListener(isNowVideoPlayer)
+
+            // Update native seek buttons visibility
+            if (isNowVideoPlayer) {
+                updateNativeSeekButtons()
+            }
         }
 
         private val sheetsHeightObserver = { sheetsHeight: Pair<Int, Int> ->
@@ -142,6 +147,15 @@ class MediaViewerAdapter(
                 true -> localPlayerViewModel.exoPlayer
                 false -> null
             }
+        }
+
+        @OptIn(androidx.media3.common.util.UnstableApi::class)
+        private fun updateNativeSeekButtons() {
+            val hideButtons = localPlayerViewModel.hideNativeSeekButtons
+
+            // Update PlayerView to show/hide rewind and fast-forward buttons
+            playerView.setShowRewindButton(!hideButtons)
+            playerView.setShowFastForwardButton(!hideButtons)
         }
 
         fun bind(media: Media) {

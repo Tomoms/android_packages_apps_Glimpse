@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.lineageos.glimpse.ext.applicationContext
 import org.lineageos.glimpse.ext.doubleTapToSeekEnabled
 import org.lineageos.glimpse.ext.doubleTapToSeekSeconds
+import org.lineageos.glimpse.ext.hideNativeSeekButtons
 import org.lineageos.glimpse.ext.isPlayingFlow
 import org.lineageos.glimpse.models.AlbumType
 import org.lineageos.glimpse.models.MediaType
@@ -320,6 +321,9 @@ class LocalPlayerViewModel(
 
     val doubleTapToSeekSeconds: Int
         get() = sharedPreferences.doubleTapToSeekSeconds
+
+    val hideNativeSeekButtons: Boolean
+        get() = sharedPreferences.hideNativeSeekButtons
 
     override fun onCleared() {
         exoPlayer.release()
