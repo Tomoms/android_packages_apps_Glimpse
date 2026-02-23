@@ -5,7 +5,6 @@
 
 package org.lineageos.glimpse
 
-import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Intent
 import android.content.res.Configuration
@@ -97,7 +96,7 @@ class ViewActivity : AppCompatActivity(R.layout.activity_view) {
     // Contracts
     private val deleteUriContract =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            val succeeded = it.resultCode != Activity.RESULT_CANCELED
+            val succeeded = it.resultCode != RESULT_CANCELED
 
             MediaDialogsUtils.showDeleteForeverResultSnackbar(
                 this,
@@ -109,7 +108,7 @@ class ViewActivity : AppCompatActivity(R.layout.activity_view) {
 
     private val trashUriContract =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            val succeeded = it.resultCode != Activity.RESULT_CANCELED
+            val succeeded = it.resultCode != RESULT_CANCELED
 
             MediaDialogsUtils.showMoveToTrashResultSnackbar(
                 this,
@@ -126,7 +125,7 @@ class ViewActivity : AppCompatActivity(R.layout.activity_view) {
 
     private val restoreUriFromTrashContract =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            val succeeded = it.resultCode != Activity.RESULT_CANCELED
+            val succeeded = it.resultCode != RESULT_CANCELED
 
             MediaDialogsUtils.showRestoreFromTrashResultSnackbar(
                 this,
