@@ -13,6 +13,16 @@
         android:title="@string/file_action_use_as" />
 
     <item
+        android:id="@+id/copyToAlbum"
+	style="@style/Theme.Glimpse.TopAppBarOption"
+        android:title="Copy to Album" />
+
+    <item
+	android:id="@+id/moveToAlbum"
+	style="@style/Theme.Glimpse.TopAppBarOption"
+        android:title="Move to Album" />
+
+    <item
         android:id="@+id/info"
         style="@style/Theme.Glimpse.TopAppBarOption"
         android:contentDescription="@string/file_action_information"
