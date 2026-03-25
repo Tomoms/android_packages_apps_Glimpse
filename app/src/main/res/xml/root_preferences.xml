@@ -49,6 +49,13 @@
             app:summary="@string/hide_native_seek_buttons_description"
             app:title="@string/hide_native_seek_buttons_title" />
 
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:iconSpaceReserved="false"
+            app:key="remember_video_playback_position_enabled"
+            app:summary="@string/remember_video_playback_position_enabled_description"
+            app:title="@string/remember_video_playback_position_enabled_title" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

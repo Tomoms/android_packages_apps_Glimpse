@@ -33,8 +33,12 @@ import org.lineageos.glimpse.ext.applicationContext
 import org.lineageos.glimpse.ext.doubleTapToSeekEnabled
 import org.lineageos.glimpse.ext.doubleTapToSeekSeconds
 import org.lineageos.glimpse.ext.edgeTapNavigationEnabled
+import org.lineageos.glimpse.ext.getVideoPlaybackPosition
 import org.lineageos.glimpse.ext.hideNativeSeekButtons
 import org.lineageos.glimpse.ext.isPlayingFlow
+import org.lineageos.glimpse.ext.rememberVideoPlaybackPositionEnabled
+import org.lineageos.glimpse.ext.removeVideoPlaybackPosition
+import org.lineageos.glimpse.ext.setVideoPlaybackPosition
 import org.lineageos.glimpse.models.AlbumType
 import org.lineageos.glimpse.models.MediaType
 import org.lineageos.glimpse.models.MotionPhoto
@@ -361,10 +365,39 @@ class LocalPlayerViewModel(
     }
 
     fun setCurrentVideoUri(uri: Uri) {
+        val startPositionMs = when (sharedPreferences.rememberVideoPlaybackPositionEnabled) {
+            true -> sharedPreferences.getVideoPlaybackPosition(uri)
+            false -> 0L
+        }
+
         exoPlayer.apply {
             setMediaItem(MediaItem.fromUri(uri))
             prepare()
+            if (startPositionMs > 0L) {
+                seekTo(startPositionMs)
+            }
             playWhenReady = true
+        }
+    }
+
+    fun saveCurrentVideoPosition(currentVideoUri: Uri?) {
+        val currentVideoUri = currentVideoUri ?: return
+
+        if (!sharedPreferences.rememberVideoPlaybackPositionEnabled) {
+            return
+        }
+
+        val currentPosition = exoPlayer.currentPosition
+        val duration = exoPlayer.duration
+        val nearEnd = duration > 0L &&
+                currentPosition >= duration - FINISHED_VIDEO_POSITION_TOLERANCE_MS
+
+        when {
+            currentPosition <= 0L -> sharedPreferences.removeVideoPlaybackPosition(currentVideoUri)
+            nearEnd -> sharedPreferences.removeVideoPlaybackPosition(currentVideoUri)
+            else -> sharedPreferences.setVideoPlaybackPosition(
+                currentVideoUri, currentPosition
+            )
         }
     }
 
@@ -411,5 +444,7 @@ class LocalPlayerViewModel(
 
     companion object {
         private const val MEDIA_POSITION_KEY = "media_position"
+
+        private const val FINISHED_VIDEO_POSITION_TOLERANCE_MS = 2_000L
     }
 }
