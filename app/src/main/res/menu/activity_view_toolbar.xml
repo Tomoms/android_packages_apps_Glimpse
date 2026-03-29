@@ -23,6 +23,11 @@
         android:title="Move to Album" />
 
     <item
+        android:id="@+id/lockInVault"
+        style="@style/Theme.Glimpse.TopAppBarOption"
+        android:title="Lock" />
+
+    <item
         android:id="@+id/info"
         style="@style/Theme.Glimpse.TopAppBarOption"
         android:contentDescription="@string/file_action_information"

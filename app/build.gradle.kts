@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.biometric:biometric:1.1.0")
     implementation(libs.adobe.xmpcore)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
