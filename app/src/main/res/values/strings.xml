@@ -133,4 +133,7 @@
     <!-- Motion Photo -->
     <string name="motion_photo_show_video">Show video</string>
     <string name="motion_photo_show_photo">Show photo</string>
+
+    <!-- Settings title -->
+    <string name="title_activity_settings">Settings</string>
 </resources>
