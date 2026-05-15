@@ -6,6 +6,7 @@
 package org.lineageos.glimpse
 
 import android.app.KeyguardManager
+import android.app.KeyguardManager.KeyguardDismissCallback
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
@@ -253,12 +254,14 @@ class ViewActivity : AppCompatActivity(R.layout.activity_view) {
 
         shareButton.setOnClickListener {
             viewModel.displayedMedia.value?.let {
-                startActivity(
-                    Intent.createChooser(
-                        buildShareIntent(it),
-                        null
+                dismissKeyguardAndRun {
+                    startActivity(
+                        Intent.createChooser(
+                            buildShareIntent(it),
+                            null
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -499,9 +502,6 @@ class ViewActivity : AppCompatActivity(R.layout.activity_view) {
 
             launch {
                 viewModel.secure.collectLatest { secure ->
-                    // Update share button
-                    shareButton.isVisible = !secure
-
                     // Update use as button
                     useAsButton.isVisible = !secure
                 }
@@ -572,6 +572,23 @@ class ViewActivity : AppCompatActivity(R.layout.activity_view) {
         viewModel.setSheetsHeight(
             appBarLayout.measuredHeight,
             bottomSheetLinearLayout.measuredHeight,
+        )
+    }
+
+    private fun dismissKeyguardAndRun(runnable: () -> Unit) {
+        if (!keyguardManager.isKeyguardLocked) {
+            runnable()
+            return
+        }
+
+        keyguardManager.requestDismissKeyguard(
+            this,
+            object : KeyguardManager.KeyguardDismissCallback() {
+                override fun onDismissSucceeded() {
+                    super.onDismissSucceeded()
+                    runnable()
+                }
+            }
         )
     }
 
