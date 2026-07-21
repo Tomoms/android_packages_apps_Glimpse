@@ -257,17 +257,19 @@ class AlbumsFragment : Fragment(R.layout.fragment_albums) {
             view.findViewById<android.widget.ImageView>(R.id.dot1),
             view.findViewById<android.widget.ImageView>(R.id.dot2),
             view.findViewById<android.widget.ImageView>(R.id.dot3),
-            view.findViewById<android.widget.ImageView>(R.id.dot4)
+            view.findViewById<android.widget.ImageView>(R.id.dot4),
+            view.findViewById<android.widget.ImageView>(R.id.dot5),
+            view.findViewById<android.widget.ImageView>(R.id.dot6)
         )
 
         var currentPin = ""
         var firstPin = ""
         var setupPhase = if (isSetup) 1 else 0
 
-        titleText.text = if (isSetup) "Create 4-Digit PIN" else "Enter Vault PIN"
+        titleText.text = if (isSetup) "Create 6-digit PIN" else "Enter Vault PIN"
 
         fun updateDots() {
-            for (i in 0..3) {
+            for (i in 0..5) {
                 dots[i].alpha = if (i < currentPin.length) 1.0f else 0.3f
             }
         }
@@ -283,12 +285,12 @@ class AlbumsFragment : Fragment(R.layout.fragment_albums) {
 
         buttons.forEach { (id, number) ->
             view.findViewById<View>(id).setOnClickListener {
-                if (currentPin.length < 4) {
+                if (currentPin.length < 6) {
                     currentPin += number
                     updateDots()
 
-                    if (currentPin.length == 4) {
-                        // Tiny delay so the user actually sees the 4th dot fill in
+                    if (currentPin.length == 6) {
+                        // Tiny delay so the user actually sees the 6th dot fill in
                         view.postDelayed({
                             if (setupPhase == 1) {
                                 firstPin = currentPin
@@ -307,7 +309,7 @@ class AlbumsFragment : Fragment(R.layout.fragment_albums) {
                                     currentPin = ""
                                     firstPin = ""
                                     setupPhase = 1
-                                    titleText.text = "Create 4-Digit PIN"
+                                    titleText.text = "Create 6-digit PIN"
                                     updateDots()
                                 }
                             } else {

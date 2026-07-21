@@ -60,6 +60,21 @@
             app:tint="?attr/colorOnSurfaceVariant"
             android:layout_marginHorizontal="8dp" />
 
+        <ImageView
+            android:id="@+id/dot5"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_pin_dot"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:layout_marginHorizontal="8dp" />
+
+        <ImageView
+            android:id="@+id/dot6"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_pin_dot"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:layout_marginHorizontal="8dp" />
     </LinearLayout>
 
     <GridLayout
